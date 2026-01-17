@@ -1,2 +1,2 @@
 # plantshop
-simple project
+a simple website project
