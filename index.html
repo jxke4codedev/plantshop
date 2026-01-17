@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plant Shop</title>
+  <style>
+    /* Global Styles */
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f9f9f9; color: #333; line-height: 1.6; }
+    h1, h2, h3 { margin: 0; color: #2d5016; }
+    p { margin: 10px 0; }
+    button { margin: 5px; cursor: pointer; }
+    .hidden { display: none; }
+
+    /* Header */
+    header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: #4caf50; color: white; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
+    header h1 { font-size: 1.5rem; }
+    header nav { display: flex; align-items: center; gap: 15px; }
+    header nav span { color: white; text-decoration: none; font-weight: bold; cursor: pointer; }
+    header nav span:not(#cart-count) { padding: 5px 10px; border-radius: 5px; background-color: #388e3c; }
+    header nav #cart-count { font-size: 1.2rem; background-color: #388e3c; padding: 5px 10px; border-radius: 50%; }
+
+    /* Landing Page */
+    #landing { 
+      background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), 
+                  url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><defs><linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%234a7c59;stop-opacity:1" /><stop offset="100%" style="stop-color:%232d5016;stop-opacity:1" /></linearGradient></defs><rect fill="url(%23bg)" width="1200" height="800"/><g opacity="0.3"><path fill="%23ffffff" d="M200,400 Q250,350 300,400 T400,400"/><path fill="%23ffffff" d="M600,300 Q650,250 700,300 T800,300"/><ellipse cx="300" cy="500" rx="80" ry="120" fill="%23ffffff"/><ellipse cx="700" cy="450" rx="60" ry="100" fill="%23ffffff"/></g></svg>'); 
+      background-size: cover; 
+      background-position: center; 
+      height: 100vh; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: center; 
+      align-items: center; 
+      text-align: center; 
+      color: white; 
+      padding: 20px; 
+    }
+    #landing h1 { font-size: 3rem; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); }
+    #landing p { font-size: 1.2rem; max-width: 600px; margin-bottom: 30px; background-color: rgba(0, 0, 0, 0.5); padding: 15px; border-radius: 8px; }
+    #landing button { background-color: #4caf50; color: white; border: none; padding: 15px 30px; font-size: 1.1rem; border-radius: 5px; transition: background-color 0.3s; }
+    #landing button:hover { background-color: #45a049; }
+
+    /* Product Listing */
+    #products { padding: 20px; max-width: 1200px; margin: 0 auto; }
+    #products h2 { margin-top: 40px; border-bottom: 2px solid #4caf50; padding-bottom: 10px; }
+    .plant-grid { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; }
+    .plant-card { background-color: white; border: 1px solid #ddd; border-radius: 8px; padding: 15px; text-align: center; width: 250px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); transition: transform 0.2s; }
+    .plant-card:hover { transform: translateY(-5px); }
+    .plant-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 5px; }
+    .plant-card button { background-color: #4caf50; color: white; border: none; padding: 10px 20px; border-radius: 5px; transition: background-color 0.3s; }
+    .plant-card button:hover:not(:disabled) { background-color: #45a049; }
+    .plant-card button:disabled { background-color: #ccc; cursor: not-allowed; }
+
+    /* Shopping Cart */
+    #cart { padding: 20px; max-width: 800px; margin: 0 auto; }
+    .cart-summary { background-color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
+    .cart-item { display: flex; align-items: center; background-color: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); }
+    .cart-item img { width: 50px; height: 50px; object-fit: cover; border-radius: 5px; margin-right: 15px; }
+    .cart-item h3 { flex: 1; }
+    .cart-item button { background-color: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 5px; margin-left: 10px; }
+    .quantity-controls { display: flex; align-items: center; margin: 0 10px; }
+    .quantity-controls button { background-color: #4caf50; color: white; border: none; padding: 5px 10px; border-radius: 5px; margin: 0 5px; }
+    .checkout-button { background-color: #ff9800; color: white; border: none; padding: 15px 30px; font-size: 1.1rem; border-radius: 5px; margin-right: 10px; transition: background-color 0.3s; }
+    .checkout-button:hover { background-color: #f57c00; }
+    .continue-shopping-button { background-color: #2196f3; color: white; border: none; padding: 15px 30px; font-size: 1.1rem; border-radius: 5px; transition: background-color 0.3s; }
+    .continue-shopping-button:hover { background-color: #1976d2; }
+    .empty-cart { text-align: center; padding: 40px; color: #666; }
+
+    /* Responsive */
+    @media (max-width: 768px) { 
+      .plant-grid { flex-direction: column; align-items: center; } 
+      .plant-card { width: 100%; max-width: 300px; }
+      #landing h1 { font-size: 2rem; }
+      #landing p { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Shared Header -->
+  <header id="header" class="hidden">
+    <h1>🌿 Plant Shop</h1>
+    <nav>
+      <span onclick="showProducts()">Products</span>
+      <span onclick="showCart()">Cart</span>
+      <span id="cart-count">🛒 0</span>
+    </nav>
+  </header>
+
+  <!-- Landing Page -->
+  <div id="landing">
+    <h1>🌿 GreenThumb Nursery</h1>
+    <p>Welcome to GreenThumb Nursery, your go-to source for beautiful houseplants. We offer a wide variety of plants to brighten your home and improve your air quality.</p>
+    <button onclick="showProducts()">Get Started</button>
+  </div>
+
+  <!-- Product Listing -->
+  <div id="products" class="hidden">
+    <div>
+      <h2>Low Light</h2>
+      <div class="plant-grid">
+        <div class="plant-card" data-id="1">
+          <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'><rect fill='%23e8f5e9' width='200' height='150'/><path d='M100,120 L90,80 L80,100 L70,70 L60,90 L50,50 M100,120 L110,80 L120,100 L130,70 L140,90 L150,50' stroke='%232e7d32' stroke-width='3' fill='none'/><ellipse cx='100' cy='130' rx='30' ry='10' fill='%238d6e63'/></svg>" alt="Snake Plant">
+          <h3>Snake Plant</h3>
+          <p><strong>$20</strong></p>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+        <div class="plant-card" data-id="4">
+          <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'><rect fill='%23e8f5e9' width='200' height='150'/><ellipse cx='100' cy='70' rx='40' ry='50' fill='%231b5e20'/><ellipse cx='100' cy='60' rx='35' ry='40' fill='%232e7d32'/><circle cx='100' cy='55' r='8' fill='%23fff'/><ellipse cx='100' cy='130' rx='35' ry='12' fill='%238d6e63'/></svg>" alt="Peace Lily">
+          <h3>Peace Lily</h3>
+          <p><strong>$25</strong></p>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h2>Indoor</h2>
+      <div class="plant-grid">
+        <div class="plant-card" data-id="2">
+          <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'><rect fill='%23e8f5e9' width='200' height='150'/><path d='M100,130 Q80,100 70,80 Q60,60 75,50 M100,130 Q120,100 130,80 Q140,60 125,50' stroke='%23388e3c' stroke-width='2' fill='none'/><circle cx='75' cy='50' r='12' fill='%234caf50'/><circle cx='125' cy='50' r='12' fill='%234caf50'/><circle cx='70' cy='80' r='10' fill='%234caf50'/><circle cx='130' cy='80' r='10' fill='%234caf50'/><rect x='85' y='130' width='30' height='20' rx='3' fill='%238d6e63'/></svg>" alt="Pothos">
+          <h3>Pothos</h3>
+          <p><strong>$15</strong></p>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+        <div class="plant-card" data-id="3">
+          <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'><rect fill='%23e8f5e9' width='200' height='150'/><g id='leaf'><path d='M0,0 Q5,-15 0,-30 Q-5,-15 0,0' fill='%234caf50' stroke='%232e7d32'/></g><use href='%23leaf' x='100' y='75'/><use href='%23leaf' x='100' y='75' transform='rotate(45 100 75)'/><use href='%23leaf' x='100' y='75' transform='rotate(90 100 75)'/><use href='%23leaf' x='100' y='75' transform='rotate(135 100 75)'/><use href='%23leaf' x='100' y='75' transform='rotate(180 100 75)'/><use href='%23leaf' x='100' y='75' transform='rotate(225 100 75)'/><use href='%23leaf' x='100' y='75' transform='rotate(270 100 75)'/><use href='%23leaf' x='100' y='75' transform='rotate(315 100 75)'/><ellipse cx='100' cy='135' rx='30' ry='10' fill='%238d6e63'/></svg>" alt="Spider Plant">
+          <h3>Spider Plant</h3>
+          <p><strong>$18</strong></p>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h2>Outdoor</h2>
+      <div class="plant-grid">
+        <div class="plant-card" data-id="5">
+          <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'><rect fill='%23e8f5e9' width='200' height='150'/><rect x='70' y='60' width='10' height='60' fill='%232e7d32'/><rect x='85' y='50' width='10' height='70' fill='%232e7d32'/><rect x='105' y='50' width='10' height='70' fill='%232e7d32'/><rect x='120' y='60' width='10' height='60' fill='%232e7d32'/><ellipse cx='75' cy='50' rx='15' ry='25' fill='%234caf50'/><ellipse cx='90' cy='40' rx='15' ry='25' fill='%234caf50'/><ellipse cx='110' cy='40' rx='15' ry='25' fill='%234caf50'/><ellipse cx='125' cy='50' rx='15' ry='25' fill='%234caf50'/><ellipse cx='100' cy='135' rx='40' ry='12' fill='%238d6e63'/></svg>" alt="ZZ Plant">
+          <h3>ZZ Plant</h3>
+          <p><strong>$22</strong></p>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+        <div class="plant-card" data-id="6">
+          <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'><rect fill='%23e8f5e9' width='200' height='150'/><path d='M100,100 L90,70 Q88,60 95,55 L100,50 L105,55 Q112,60 110,70 Z' fill='%234caf50' stroke='%232e7d32' stroke-width='2'/><circle cx='95' cy='65' r='6' fill='%23a5d6a7'/><circle cx='105' cy='75' r='5' fill='%23a5d6a7'/><path d='M100,100 L120,80 Q125,75 130,80 L135,90 Q135,95 130,95 Z' fill='%234caf50' stroke='%232e7d32' stroke-width='2'/><circle cx='128' cy='85' r='4' fill='%23a5d6a7'/><path d='M100,100 L80,80 Q75,75 70,80 L65,90 Q65,95 70,95 Z' fill='%234caf50' stroke='%232e7d32' stroke-width='2'/><circle cx='72' cy='85' r='4' fill='%23a5d6a7'/><ellipse cx='100' cy='135' rx='35' ry='12' fill='%238d6e63'/></svg>" alt="Monstera">
+          <h3>Monstera</h3>
+          <p><strong>$30</strong></p>
+          <button class="add-to-cart">Add to Cart</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shopping Cart -->
+  <div id="cart" class="hidden">
+    <div class="cart-summary">
+      <p><strong>Total Plants:</strong> <span id="total-plants">0</span></p>
+      <p><strong>Total Cost:</strong> $<span id="total-cost">0</span></p>
+    </div>
+    <div id="cart-items"></div>
+    <button class="checkout-button" onclick="checkout()">Checkout</button>
+    <button class="continue-shopping-button" onclick="showProducts()">Continue Shopping</button>
+  </div>
+
+  <script>
+    // Plant data with embedded SVG images
+    const plants = {
+      1: { name: 'Snake Plant', price: 20, thumbnail: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'><rect fill='%23e8f5e9' width='200' height='150'/><path d='M100,120 L90,80 L80,100 L70,70 L60,90 L50,50 M100,120 L110,80 L120,100 L130,70 L140,90 L150,50' stroke='%232e7d32' stroke-width='3' fill='none'/><ellipse cx='100' cy='130' rx='30' ry='10' fill='%238d6e63'/></svg>" },
+      2: { name: 'Pothos', price: 15, thumbnail: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'><rect fill='%23e8f5e9' width='200' height='150'/><path d='M100,130 Q80,100 70,80 Q60,60 75,50 M100,130 Q120,100 130,80 Q140,60 125,50' stroke='%23388e3c' stroke-width='2' fill='none'/><circle cx='75' cy='50' r='12' fill='%234caf50'/><circle cx='125' cy='50' r='12' fill='%234caf50'/><circle cx='70' cy='80' r='10' fill='%234caf50'/><circle cx='130' cy='80' r='10' fill='%234caf50'/><rect x='85' y='130' width='30' height='20' rx='3' fill='%238d6e63'/></svg>" },
+      3: { name: 'Spider Plant', price: 18, thumbnail: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'><rect fill='%23e8f5e9' width='200' height='150'/><g id='leaf'><path d='M0,0 Q5,-15 0,-30 Q-5,-15 0,0' fill='%234caf50' stroke='%232e7d32'/></g><use href='%23leaf' x='100' y='75'/><use href='%23leaf' x='100' y='75' transform='rotate(45 100 75)'/><use href='%23leaf' x='100' y='75' transform='rotate(90 100 75)'/><use href='%23leaf' x='100' y='75' transform='rotate(135 100 75)'/><use href='%23leaf' x='100' y='75' transform='rotate(180 100 75)'/><use href='%23leaf' x='100' y='75' transform='rotate(225 100 75)'/><use href='%23leaf' x='100' y='75' transform='rotate(270 100 75)'/><use href='%23leaf' x='100' y='75' transform='rotate(315 100 75)'/><ellipse cx='100' cy='135' rx='30' ry='10' fill='%238d6e63'/></svg>" },
+      4: { name: 'Peace Lily', price: 25, thumbnail: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'><rect fill='%23e8f5e9' width='200' height='150'/><ellipse cx='100' cy='70' rx='40' ry='50' fill='%231b5e20'/><ellipse cx='100' cy='60' rx='35' ry='40' fill='%232e7d32'/><circle cx='100' cy='55' r='8' fill='%23fff'/><ellipse cx='100' cy='130' rx='35' ry='12' fill='%238d6e63'/></svg>" },
+      5: { name: 'ZZ Plant', price: 22, thumbnail: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'><rect fill='%23e8f5e9' width='200' height='150'/><rect x='70' y='60' width='10' height='60' fill='%232e7d32'/><rect x='85' y='50' width='10' height='70' fill='%232e7d32'/><rect x='105' y='50' width='10' height='70' fill='%232e7d32'/><rect x='120' y='60' width='10' height='60' fill='%232e7d32'/><ellipse cx='75' cy='50' rx='15' ry='25' fill='%234caf50'/><ellipse cx='90' cy='40' rx='15' ry='25' fill='%234caf50'/><ellipse cx='110' cy='40' rx='15' ry='25' fill='%234caf50'/><ellipse cx='125' cy='50' rx='15' ry='25' fill='%234caf50'/><ellipse cx='100' cy='135' rx='40' ry='12' fill='%238d6e63'/></svg>" },
+      6: { name: 'Monstera', price: 30, thumbnail: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'><rect fill='%23e8f5e9' width='200' height='150'/><path d='M100,100 L90,70 Q88,60 95,55 L100,50 L105,55 Q112,60 110,70 Z' fill='%234caf50' stroke='%232e7d32' stroke-width='2'/><circle cx='95' cy='65' r='6' fill='%23a5d6a7'/><circle cx='105' cy='75' r='5' fill='%23a5d6a7'/><path d='M100,100 L120,80 Q125,75 130,80 L135,90 Q135,95 130,95 Z' fill='%234caf50' stroke='%232e7d32' stroke-width='2'/><circle cx='128' cy='85' r='4' fill='%23a5d6a7'/><path d='M100,100 L80,80 Q75,75 70,80 L65,90 Q65,95 70,95 Z' fill='%234caf50' stroke='%232e7d32' stroke-width='2'/><circle cx='72' cy='85' r='4' fill='%23a5d6a7'/><ellipse cx='100' cy='135' rx='35' ry='12' fill='%238d6e63'/></svg>" },
+    };
+
+    // Cart state (in-memory storage)
+    let cart = {};
+    let addedItems = new Set();
+
+    // Show/hide sections
+    function showLanding() {
+      document.getElementById('landing').classList.remove('hidden');
+      document.getElementById('products').classList.add('hidden');
+      document.getElementById('cart').classList.add('hidden');
+      document.getElementById('header').classList.add('hidden');
+    }
+    
+    function showProducts() {
+      document.getElementById('landing').classList.add('hidden');
+      document.getElementById('products').classList.remove('hidden');
+      document.getElementById('cart').classList.add('hidden');
+      document.getElementById('header').classList.remove('hidden');
+      updateCartCount();
+    }
+    
+    function showCart() {
+      document.getElementById('landing').classList.add('hidden');
+      document.getElementById('products').classList.add('hidden');
+      document.getElementById('cart').classList.remove('hidden');
+      document.getElementById('header').classList.remove('hidden');
+      renderCart();
+    }
+
+    // Update cart count in header
+    function updateCartCount() {
+      const totalItems = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+      document.getElementById('cart-count').textContent = `🛒 ${totalItems}`;
+    }
+
+    // Add to cart
+    function addToCart(id) {
+      if (!addedItems.has(id.toString())) {
+        cart[id] = (cart[id] || 0) + 1;
+        addedItems.add(id.toString());
+        updateCartCount();
+        const button = document.querySelector(`.plant-card[data-id="${id}"] .add-to-cart`);
+        if (button) button.disabled = true;
+      }
+    }
+
+    // Increase quantity
+    function increaseQuantity(id) {
+      cart[id] = (cart[id] || 0) + 1;
+      renderCart();
+      updateCartCount();
+    }
+
+    // Decrease quantity
+    function decreaseQuantity(id) {
+      if (cart[id] > 1) {
+        cart[id] -= 1;
+        renderCart();
+        updateCartCount();
+      }
+    }
+
+    // Remove item
+    function removeItem(id) {
+      delete cart[id];
+      addedItems.delete(id.toString());
+      renderCart();
+      updateCartCount();
+      const button = document.querySelector(`.plant-card[data-id="${id}"] .add-to-cart`);
+      if (button) button.disabled = false;
+    }
+
+    // Render cart
+    function renderCart() {
+      const cartItemsEl = document.getElementById('cart-items');
+      const totalPlantsEl = document.getElementById('total-plants');
+      const totalCostEl = document.getElementById('total-cost');
+      cartItemsEl.innerHTML = '';
+      
+      let totalPlants = 0;
+      let totalCost = 0;
+      
+      const cartKeys = Object.keys(cart);
+      
+      if (cartKeys.length === 0) {
+        cartItemsEl.innerHTML = '<div class="empty-cart"><h3>Your cart is empty</h3><p>Add some plants to get started!</p></div>';
+      } else {
+        cartKeys.forEach(id => {
+          const plant = plants[id];
+          const quantity = cart[id];
+          totalPlants += quantity;
+          totalCost += plant.price * quantity;
+          
+          const itemEl = document.createElement('div');
+          itemEl.className = 'cart-item';
+          itemEl.innerHTML = `
+            <img src="${plant.thumbnail}" alt="${plant.name}">
+            <h3>${plant.name}</h3>
+            <p>$${plant.price}</p>
+            <div class="quantity-controls">
+              <button onclick="decreaseQuantity(${id})">-</button>
+              <span>${quantity}</span>
+              <button onclick="increaseQuantity(${id})">+</button>
+            </div>
+            <button onclick="removeItem(${id})">Delete</button>
+          `;
+          cartItemsEl.appendChild(itemEl);
+        });
+      }
+      
+      totalPlantsEl.textContent = totalPlants;
+      totalCostEl.textContent = totalCost;
+    }
+
+    // Checkout
+    function checkout() {
+      if (Object.keys(cart).length === 0) {
+        alert('Your cart is empty! Add some plants first.');
+      } else {
+        const total = Object.keys(cart).reduce((sum, id) => sum + (plants[id].price * cart[id]), 0);
+        alert(`Thank you for your order! Total: $${total}\n\nCheckout functionality coming soon!`);
+      }
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      showLanding();
+      
+      // Attach Add to Cart event listeners
+      document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', (e) => {
+          const id = e.target.closest('.plant-card').dataset.id;
+          addToCart(id);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
